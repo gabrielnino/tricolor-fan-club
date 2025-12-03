@@ -3,10 +3,12 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,8 +38,13 @@ export default function CheckoutPage() {
         throw new Error("Error al guardar el pedido");
       }
 
-      setMessage("Pedido guardado correctamente.");
+      setMessage("¡Gracias por tu compra! Estamos procesando tu pedido…");
       form.reset();
+
+      // Pequeña pausa para que el usuario lea el mensaje
+      setTimeout(() => {
+        router.push("/");
+      }, 5000);
     } catch (err) {
       console.error(err);
       setMessage("Hubo un problema al guardar el pedido.");
