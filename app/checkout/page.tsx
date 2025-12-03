@@ -90,6 +90,7 @@ export default function CheckoutPage() {
             <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide">
               Dirección de envío
             </h2>
+
             <div className="space-y-1">
               <label
                 htmlFor="addressLine1"
@@ -109,22 +110,30 @@ export default function CheckoutPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               <div className="space-y-1">
+              <div className="space-y-1">
                 <label
                   htmlFor="city"
                   className="block text-sm font-medium text-slate-800"
                 >
                   Ciudad <span className="text-red-500">*</span>
                 </label>
-                <input
+                <select
                   id="city"
                   name="city"
-                  type="text"
                   required
                   autoComplete="address-level2"
-                  placeholder="Ej. Vancouver"
-                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-                />
+                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 bg-white"
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Selecciona una ciudad
+                  </option>
+                  <option value="Vancouver">Vancouver</option>
+                  <option value="Surrey">Surrey</option>
+                  <option value="Burnaby">Burnaby</option>
+                  <option value="Richmond">Richmond</option>
+                  <option value="Coquitlam">Coquitlam</option>
+                </select>
               </div>
             </div>
 
@@ -133,13 +142,13 @@ export default function CheckoutPage() {
                 htmlFor="region"
                 className="block text-sm font-medium text-slate-800"
               >
-                Provincia / Estado 
+                Provincia / Estado
               </label>
               <label
                 htmlFor="region"
                 className="block text-sm font-medium text-slate-800"
               >
-                Solo disponible en British Columbia 
+                Solo disponible en British Columbia
               </label>
             </div>
 
@@ -176,7 +185,7 @@ export default function CheckoutPage() {
               type="submit"
               className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition"
             >
-              Continuar al pago
+              Realizar el pedido
             </button>
           </div>
 
