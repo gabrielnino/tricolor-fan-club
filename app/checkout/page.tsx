@@ -1,9 +1,51 @@
 // app/checkout/page.tsx
 "use client";
 
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 
 export default function CheckoutPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      fullName: formData.get("fullName"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      addressLine1: formData.get("addressLine1"),
+      city: formData.get("city"),
+      deliveryNotes: formData.get("deliveryNotes"),
+    };
+
+    try {
+      const res = await fetch("/api/checkout-webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al guardar el pedido");
+      }
+
+      setMessage("Pedido guardado correctamente.");
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      setMessage("Hubo un problema al guardar el pedido.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-neutral-50 px-4 py-10">
       <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-md border border-neutral-200">
@@ -16,7 +58,7 @@ export default function CheckoutPage() {
           </p>
         </header>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Datos personales */}
           <section className="space-y-4">
             <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide">
@@ -144,12 +186,9 @@ export default function CheckoutPage() {
               >
                 Provincia / Estado
               </label>
-              <label
-                htmlFor="region"
-                className="block text-sm font-medium text-slate-800"
-              >
+              <span className="block text-sm text-slate-600">
                 Solo disponible en British Columbia
-              </label>
+              </span>
             </div>
 
             <div className="space-y-1">
@@ -183,13 +222,18 @@ export default function CheckoutPage() {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition"
+              disabled={isSubmitting}
+              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Realizar el pedido
+              {isSubmitting ? "Guardando..." : "Realizar el pedido"}
             </button>
           </div>
 
-          <p className="text-[11px] text-slate-400 text-right">
+          {message && (
+            <p className="mt-3 text-xs text-center text-slate-700">{message}</p>
+          )}
+
+          <p className="text-[11px] text-slate-400 text-right mt-2">
             Tus datos se usarán solo para procesar tu pedido.
           </p>
         </form>
