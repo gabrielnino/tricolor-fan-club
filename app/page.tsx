@@ -1,6 +1,7 @@
 // app/page.tsx
 import Image from "next/image";
-import Link from "next/link";
+import Stripe from "stripe";
+import { redirect } from "next/navigation";
 
 type Lang = "es";
 
@@ -18,7 +19,7 @@ const productos = [
     name: "Camiseta Colombia Local 2024",
     description:
       "Camiseta estilo oficial para sentir el rugido del estadio desde Vancouver.",
-    price: 119,
+    price: 1.9,
     currency: "CAD",
     image: "/images/jersey-2024.png",
     badge: "Lista para el partido",
@@ -113,80 +114,105 @@ const t = {
 };
 
 // -----------------------------------------------------------------------------
-// STRIPE PLACEHOLDER
+// STRIPE CHECKOUT
 // -----------------------------------------------------------------------------
+
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+if (!stripeSecretKey) {
+  throw new Error("Falta STRIPE_SECRET_KEY en .env.local");
+}
+
+const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: "2024-06-20",
+});
 
 async function handleCheckout(productId: string) {
   "use server";
-  // Implementar /app/api/checkout/route.ts con Stripe Checkout
-  console.log("Checkout iniciado para producto:", productId);
+
+  const product = productos.find((p) => p.id === productId);
+  if (!product) {
+    throw new Error("Producto no encontrado");
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price_data: {
+          currency: "cad",
+          unit_amount: product.price * 100, // centavos
+          product_data: {
+            name: product.name,
+            description: product.description,
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    success_url: `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/?canceled=1`,
+  });
+
+  if (!session.url) {
+    throw new Error("No se pudo generar la URL de Checkout");
+  }
+
+  redirect(session.url);
 }
 
 // -----------------------------------------------------------------------------
 // LOGO SVG
 // -----------------------------------------------------------------------------
 
-const LogoSVG = () => (
+const LogoSVG = ({ className }: { className?: string }) => (
   <svg
     width="40"
     height="40"
     viewBox="0 0 40 40"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
+    className={className}
+    aria-label="TFC logo"
   >
-    {/* Definición del gradiente (no changes needed) */}
     <defs>
-      <linearGradient
-        id="logo-gradient"
-        x1="4"
-        y1="4"
-        x2="36"
-        y2="36"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset="0%" stopColor="#FACC15" /> {/* Amarillo */}
-        <stop offset="50%" stopColor="#DC2626" /> {/* Rojo */}
-        <stop offset="100%" stopColor="#1E40AF" /> {/* Azul */}
+      {/* Smooth tri-colour gradient */}
+      <linearGradient id="logo-gradient" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#facc15" />
+        <stop offset="33%" stopColor="#dc2626" />
+        <stop offset="100%" stopColor="#1e40af" />
       </linearGradient>
+
+      {/* soft shadow so white strokes read on any background */}
+      <filter id="logo-shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="#000" floodOpacity=".25" />
+      </filter>
     </defs>
 
-    {/* Fondo circular con gradiente */}
-    <circle cx="20" cy="20" r="20" fill="url(#logo-gradient)" />
+    {/* Gradient disc */}
+    <circle cx="20" cy="20" r="18" fill="url(#logo-gradient)" />
 
-    {/* Letras T F C con strokeWidth AUMENTADO (3 instead of 2) y mejor espaciado */}
+    {/* Monogram: T F C */}
     <g
-      stroke="white"
-      strokeWidth={3} /* Increased stroke for better visibility */
+      stroke="currentColor"
+      strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
+      fill="none"
+      filter="url(#logo-shadow)"
+      style={{ color: "white" }}
     >
-      {/* T (Positioned to start on the left) */}
-      <line x1="10" y1="16" x2="18" y2="16" />
-      <line x1="14" y1="16" x2="14" y2="28" />
-
-      {/* F (Positioned in the center) */}
-      <line x1="19.5" y1="16" x2="19.5" y2="28" />
-      <line x1="19.5" y1="16" x2="26" y2="16" /> /* Top bar */
-      <line x1="19.5" y1="22" x2="24.5" y2="22" /> /* Middle bar */
-
-      {/* C (Arc open towards the right, made slightly larger for balance) */}
-      {/* Adjusted path for better visual weight and space */}
-      <path d="M28 17A6 6 0 1 0 28 27" />
+      {/* T */}
+      <path d="M11 12h6M14 12v8" />
+      {/* F */}
+      <path d="M20 12v8M20 12h5.5M20 16h4.5" />
+      {/* C */}
+      <path d="M30 16a6 6 0 1 0 0 8" />
     </g>
-
-    {/* Borde circular sutil (optional, kept for style) */}
-    <circle
-      cx="20"
-      cy="20"
-      r="19.5"
-      stroke="white"
-      strokeOpacity="0.18"
-      strokeWidth="1"
-    />
   </svg>
 );
-
 
 // -----------------------------------------------------------------------------
 // PÁGINA
@@ -333,7 +359,7 @@ export default function Home({ searchParams }: PageProps) {
           </p>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border border-neutral-200 bg-gradient-to-b from-white to-neutral-50 p-6 shadow-sm transition-all hover:shadow-md">
+          <div className="rounded-2xl border border-neutral-200 bg-gradient-to-b from-white to-neutral-50 p-6 shadow-sm transition-all hover:shadow-md">
               <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-500 text-white">
                 ✓
               </div>
