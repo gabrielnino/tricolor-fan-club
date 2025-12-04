@@ -175,8 +175,8 @@ const LogoSVG = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    width="80"
-    height="80"
+    width="100"
+    height="100"
     viewBox="0 0 2799.2642704075897 3182.0684004955865"
     className={className}
     aria-label="TFC logo"
@@ -184,9 +184,9 @@ const LogoSVG = ({ className }: { className?: string }) => (
     <g transform="scale(9.103420024779329) translate(10, 10)">
       <defs id="SvgjsDefs18464">
         <linearGradient id="SvgjsLinearGradient18471">
-          <stop id="SvgjsStop18472" stopColor="#905e26" offset="0"></stop>
-          <stop id="SvgjsStop18473" stopColor="#f5ec9b" offset="0.5"></stop>
-          <stop id="SvgjsStop18474" stopColor="#905e26" offset="1"></stop>
+          <stop id="SvgjsStop18472" stopColor="#000000ff" offset="0"></stop>
+          <stop id="SvgjsStop18473" stopColor="#000000ff" offset="0.5"></stop>
+          <stop id="SvgjsStop18474" stopColor="#000000ff" offset="1"></stop>
         </linearGradient>
         <linearGradient
           id="SvgjsLinearGradient18475"
@@ -195,10 +195,10 @@ const LogoSVG = ({ className }: { className?: string }) => (
           x2="1"
           y2="0.9999999999999999"
         >
-          <stop id="SvgjsStop18476" stopColor="#fff7ae" offset="0"></stop>
-          <stop id="SvgjsStop18477" stopColor="#c5913f" offset="0.43"></stop>
-          <stop id="SvgjsStop18478" stopColor="#fff7ae" offset="0.44"></stop>
-          <stop id="SvgjsStop18479" stopColor="#9a6831" offset="1"></stop>
+          <stop id="SvgjsStop18476" stopColor="#000000ff" offset="0"></stop>
+          <stop id="SvgjsStop18477" stopColor="#000000ff" offset="0.43"></stop>
+          <stop id="SvgjsStop18478" stopColor="#000000ff" offset="0.44"></stop>
+          <stop id="SvgjsStop18479" stopColor="#000000ff" offset="1"></stop>
         </linearGradient>
         <linearGradient
           id="SvgjsLinearGradient18480"
@@ -207,10 +207,10 @@ const LogoSVG = ({ className }: { className?: string }) => (
           x2="1"
           y2="0.9999999999999999"
         >
-          <stop id="SvgjsStop18481" stopColor="#fff7ae" offset="0"></stop>
-          <stop id="SvgjsStop18482" stopColor="#c5913f" offset="0.43"></stop>
-          <stop id="SvgjsStop18483" stopColor="#fff7ae" offset="0.44"></stop>
-          <stop id="SvgjsStop18484" stopColor="#9a6831" offset="1"></stop>
+          <stop id="SvgjsStop18481" stopColor="#000000ff" offset="0"></stop>
+          <stop id="SvgjsStop18482" stopColor="#000000ff" offset="0.43"></stop>
+          <stop id="SvgjsStop18483" stopColor="#000000ff" offset="0.44"></stop>
+          <stop id="SvgjsStop18484" stopColor="#000000ff" offset="1"></stop>
         </linearGradient>
       </defs>
 
@@ -260,14 +260,6 @@ export default function Home({ searchParams }: PageProps) {
           <div className="flex items-center gap-3">
             <div className="flex items-center">
               <LogoSVG />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="text-sm font-bold uppercase tracking-[0.15em] text-slate-900">
-                Tricolor Fan Club
-              </span>
-              <span className="text-xs font-medium text-slate-500">
-                Vancouver · British Columbia
-              </span>
             </div>
           </div>
 
